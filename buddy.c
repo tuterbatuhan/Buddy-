@@ -51,6 +51,9 @@ int binit(void *chunkpointer, int size)
 	
 	availabilityArray[internalMaxPowerNum-8] = 1;//Sets the 2^n to 1 as there is one free node at size 2^n where 2^n>chunkSize and 2^(n-1)<chunkSize
 	
+	//for(i=0; i<17; i++)
+	//	printf("\ni: %d, value: %d", i, availabilityArray[i]);
+	
 	beginningPointer = (char *)chunkpointer;//Set the begining
 	
 	//Begining of the tree creation
@@ -83,7 +86,7 @@ int binit(void *chunkpointer, int size)
 
 void* balloc(int objectsize)
 {
-	printf("\nballoc called");
+	printf("\nballoc called for: %d", objectsize);
 	//Start from the left. Find or create a suitable place. If node is a parent check childs.
 	//Calculate the memory location
 	//If found place starts after (beginningPointer+chunkSize) return null
@@ -104,16 +107,24 @@ void* balloc(int objectsize)
 		if(availabilityArray[internalMaxPowerNum-8]>0){
 			//printf("\ncalled finder");
 			char * result = recursiveBallocSearcherFinder(externalMaxPowerNum, internalMaxPowerNum, beginningPointer, beginningPointer);
-			if(result<beginningPointer+chunkSize&&result+objectsize<=beginningPointer+chunkSize)
+			if(result<beginningPointer+chunkSize&&result+objectsize<=beginningPointer+chunkSize){
+				int i;
+				for(i=0; i<17; i++)
+					printf("\ni: %d, value: %d", i, availabilityArray[i]);
 				return result;
+			}
 			else
 				return NULL;
 			//return (void *)recursiveBallocSearcherFinder(externalMaxPowerNum, internalMaxPowerNum, beginningPointer, beginningPointer);
 		}else{
 			//printf("\ncalled forced");
 			char * result = recursiveBallocSearcherForced(externalMaxPowerNum, internalMaxPowerNum, beginningPointer, beginningPointer);
-			if(result<beginningPointer+chunkSize&&result+objectsize<=beginningPointer+chunkSize)
+			if(result<beginningPointer+chunkSize&&result+objectsize<=beginningPointer+chunkSize){
+				int i;
+				for(i=0; i<17; i++)
+					printf("\ni: %d, value: %d", i, availabilityArray[i]);
 				return result;
+			}
 			else
 				return NULL;
 			//return (void *)recursiveBallocSearcherForced(externalMaxPowerNum, internalMaxPowerNum, beginningPointer, beginningPointer);
@@ -150,6 +161,7 @@ char* recursiveBallocSearcherForced(int size, int desiredSize, char *memoryPoint
 			availabilityArray[size-8]--;
 			if(desiredSize==size-1){
 				(((memoryPointer-beginningPointer)*2+1)+beginningPointer)[0] = 'a';
+				availabilityArray[size-9]--;
 				return returnMemoryPointer;
 			}
 			else{
@@ -211,12 +223,13 @@ void bfree(void *objectptr)
 	//Else free.
 	//If it is a child and sibling is also free, free the child make the parent free.(As it was parent)
 	
-	if((char *)objectptr >= (char *)beginningPointer && ((char *)objectptr <= (char * )beginningPointer+chunkSize))
+	if((char *)objectptr > (char *)beginningPointer && ((char *)objectptr <= (char * )beginningPointer+chunkSize))
 	{
 		unsigned long place = (unsigned long)((char *)objectptr - (char *)beginningPointer);
 		printf("\nPlace: %lu",place);
 		
-		char * freeptr = findRemoveIndice(place, 0,chunkSize,(char *) beginningPointer);
+		//char * freeptr = findRemoveIndice(place, 0,chunkSize,(char *) beginningPointer);
+		char * freeptr = findRemoveIndice(place, 0,power(externalMaxPowerNum),(char *) beginningPointer);
 		//printf ("\n%c\n",freeptr[0]);
 		freeIndice(freeptr);
 		
@@ -270,7 +283,18 @@ void freeIndice(char * freeptr )
 		char * rightChild = ((parent-(char *)beginningPointer)*2+2+(char *)beginningPointer); 
 		if(leftChild[0]=='f' && rightChild[0]=='f')//If sibling is free
 		{
-			parent[0] = 'a';
+			parent[0] = 'f';
+			freeIndice(parent);
+		}
+	}else if(freeptr[0]=='f'){
+		if (freeptr == beginningPointer)//We have the situation that all memory is freed
+			return;
+		char * parent = (((freeptr-(char *)beginningPointer)-1)/2 + (char *)beginningPointer);
+		char * leftChild = ((parent-(char *)beginningPointer)*2+1+(char *)beginningPointer); 		
+		char * rightChild = ((parent-(char *)beginningPointer)*2+2+(char *)beginningPointer); 
+		if(leftChild[0]=='f' && rightChild[0]=='f')//If sibling is free
+		{
+			parent[0] = 'f';
 			freeIndice(parent);
 		}
 	}
