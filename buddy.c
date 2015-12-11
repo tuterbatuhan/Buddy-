@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#//include <math.h>
 
 //Algrotihm explained	
 	//'a' for allocated
@@ -35,6 +34,8 @@ int power(int x){
 
 int binit(void *chunkpointer, int size)
 {
+	printf("\nbinit called");
+	
 	chunkSize = size*1024;//chunksize is given in kbytes, convert it into bytes
 
 	int internalMaxPowerNum = 0;
@@ -76,14 +77,13 @@ int binit(void *chunkpointer, int size)
 	
 	//Ending of allocating the size for tree in order to be used entire process.
 	
-	
-	printf("binit called\n");
 
 	return (0);		// if success
 }
 
 void* balloc(int objectsize)
 {
+	printf("\nballoc called");
 	//Start from the left. Find or create a suitable place. If node is a parent check childs.
 	//Calculate the memory location
 	//If found place starts after (beginningPointer+chunkSize) return null
@@ -102,7 +102,7 @@ void* balloc(int objectsize)
 	else{
 		//int currentCheckSize = power(externalMaxPowerNum);//Set the initial size of the node that is the head node
 		if(availabilityArray[internalMaxPowerNum-8]>0){
-			printf("called finder");
+			printf("\ncalled finder");
 			char * result = recursiveBallocSearcherFinder(externalMaxPowerNum, internalMaxPowerNum, beginningPointer, beginningPointer);
 			if(result<beginningPointer+chunkSize&&result+objectsize<=beginningPointer+chunkSize)
 				return result;
@@ -110,7 +110,7 @@ void* balloc(int objectsize)
 				return NULL;
 			//return (void *)recursiveBallocSearcherFinder(externalMaxPowerNum, internalMaxPowerNum, beginningPointer, beginningPointer);
 		}else{
-			printf("called forced");
+			printf("\ncalled forced");
 			char * result = recursiveBallocSearcherForced(externalMaxPowerNum, internalMaxPowerNum, beginningPointer, beginningPointer);
 			if(result<beginningPointer+chunkSize&&result+objectsize<=beginningPointer+chunkSize)
 				return result;
@@ -120,8 +120,6 @@ void* balloc(int objectsize)
 		}
 	}
 	
-	printf("balloc called\n");
-
 	return (NULL);		// if not success
 }
 
@@ -206,12 +204,13 @@ void bprint(void)
 
 void bfree(void *objectptr)
 {
+	printf("\nbfree called");
 	//Calculates the position
 	//If position is at beginningPointer do not free. Tree is there.
 	//Else free.
 	//If it is a child and sibling is also free, free the child make the parent free.(As it was parent)
 	
-	if((char *)objectptr >= (char *)beginningPointer && ((char *)objectptr <= ((char * )beginningPointer+chunkSize)))
+	if((char *)objectptr >= (char *)beginningPointer && ((char *)objectptr <= (char * )beginningPointer+chunkSize))
 	{
 		unsigned long place = (unsigned long)((char *)objectptr - (char *)beginningPointer);
 		printf("\nPlace: %lu",place);
@@ -220,14 +219,14 @@ void bfree(void *objectptr)
 		//printf ("\n%c\n",freeptr[0]);
 		freeIndice(freeptr);
 		
-		printf("\nbfree called");
+		
 
 		return;
 	}
 	
 	else
 	{
-		printf("bfree bounds are not valid! \n");
+		printf("\nbfree bounds are not valid!");
 		return;
 	}	
 }
@@ -238,7 +237,7 @@ char* findRemoveIndice (unsigned long place,unsigned long chunkStart, unsigned l
 	if(memoryPointer[0]=='p')
 	{
 
-		unsigned long middle = floor((chunkEnd-chunkStart)/2)+chunkStart;
+		unsigned long middle = ((chunkEnd-chunkStart)/2)+chunkStart;
 		
 		printf("\nMiddle: %lu",middle);
 		if(place<middle)
