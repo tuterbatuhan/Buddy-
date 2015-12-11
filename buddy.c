@@ -102,7 +102,7 @@ void* balloc(int objectsize)
 	else{
 		//int currentCheckSize = power(externalMaxPowerNum);//Set the initial size of the node that is the head node
 		if(availabilityArray[internalMaxPowerNum-8]>0){
-			printf("\ncalled finder");
+			//printf("\ncalled finder");
 			char * result = recursiveBallocSearcherFinder(externalMaxPowerNum, internalMaxPowerNum, beginningPointer, beginningPointer);
 			if(result<beginningPointer+chunkSize&&result+objectsize<=beginningPointer+chunkSize)
 				return result;
@@ -110,7 +110,7 @@ void* balloc(int objectsize)
 				return NULL;
 			//return (void *)recursiveBallocSearcherFinder(externalMaxPowerNum, internalMaxPowerNum, beginningPointer, beginningPointer);
 		}else{
-			printf("\ncalled forced");
+			//printf("\ncalled forced");
 			char * result = recursiveBallocSearcherForced(externalMaxPowerNum, internalMaxPowerNum, beginningPointer, beginningPointer);
 			if(result<beginningPointer+chunkSize&&result+objectsize<=beginningPointer+chunkSize)
 				return result;
@@ -146,6 +146,7 @@ char* recursiveBallocSearcherForced(int size, int desiredSize, char *memoryPoint
 		if(desiredSize < size){
 			memoryPointer[0] = 'p';
 			availabilityArray[size-9]++;
+			availabilityArray[size-9]++;
 			availabilityArray[size-8]--;
 			if(desiredSize==size-1){
 				(((memoryPointer-beginningPointer)*2+1)+beginningPointer)[0] = 'a';
@@ -160,7 +161,7 @@ char* recursiveBallocSearcherForced(int size, int desiredSize, char *memoryPoint
 }
 
 char* recursiveBallocSearcherFinder(int size, int desiredSize, char *memoryPointer, char *returnMemoryPointer){
-	printf("\n\nsize: %d, desiredSize: %d\n, letter: %c\n", size, desiredSize, memoryPointer[0]);
+	//printf("\n\nsize: %d, desiredSize: %d\n, letter: %c\n", size, desiredSize, memoryPointer[0]);
 	if(memoryPointer[0] == 'a'){
 		return 0;
 	}
@@ -236,7 +237,7 @@ char* findRemoveIndice (unsigned long place,unsigned long chunkStart, unsigned l
 	
 	if(memoryPointer[0]=='p')
 	{
-
+		printf("\nletter is: %c", memoryPointer[0]);
 		unsigned long middle = ((chunkEnd-chunkStart)/2)+chunkStart;
 		
 		printf("\nMiddle: %lu",middle);
@@ -254,6 +255,7 @@ char* findRemoveIndice (unsigned long place,unsigned long chunkStart, unsigned l
 		}
 		
 	}
+	printf("\nletter is: %c", memoryPointer[0]);
 	return memoryPointer;
 }
 void freeIndice(char * freeptr )
