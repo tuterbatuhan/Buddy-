@@ -211,7 +211,7 @@ void bfree(void *objectptr)
 	//Else free.
 	//If it is a child and sibling is also free, free the child make the parent free.(As it was parent)
 	
-	if((char *)objectptr >= (char *)beginningPointer && (char *)objectptr < (char * )beginningPointer+chunkSize)
+	if((char *)objectptr >= (char *)beginningPointer && ((char *)objectptr <= ((char * )beginningPointer+chunkSize)))
 	{
 		unsigned long place = (unsigned long)((char *)objectptr - (char *)beginningPointer);
 		printf("\nPlace: %lu",place);
