@@ -1,3 +1,10 @@
+
+//Authors:
+//Batuhan Tuter
+//ID: 21200624
+//İlter Kavlak
+//ID: 21201961
+
 #include <stdlib.h>
 #include <stdio.h>
 
