@@ -7,3 +7,4 @@ This algorithm uses a tree structure too keep the allocation information. In thi
   Parent of a child node is at the index (n-1)/2 where n is the index of the child.
   balloc algorithm, looks to the availability array where it indicates available nodes for each different possible size respectively. If there is an available node for desired size, algorithm finds the node. If there is no available node for desired size, algortihm starts from the left of the tree and creates a node for the desired size.
   bfree algorithm finds the related node with respect to given size and frees the node. After freeing the node from it iterates from the leaf to the head and on the way it merges free nodes if they are form the same parent.
+  bprint algorithm prints leaf nodes of the tree from left to right indicating the size of the node.
