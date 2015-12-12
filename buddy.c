@@ -202,12 +202,12 @@ char* recursiveBallocSearcherFinder(int size, int desiredSize, char *memoryPoint
 	return 0;
 }
 
-void bprintRec(char * memoryPointer, int n){
+void bprintRec(char * memoryPointer, int n, char *addressPointer){
 	if(memoryPointer[0]!='a'&&memoryPointer[0]!='f'&& n>=8){
-		bprintRec((((memoryPointer-beginningPointer)*2+1)+beginningPointer), n-1);
-		bprintRec((((memoryPointer-beginningPointer)*2+2)+beginningPointer), n-1);
+		bprintRec((((memoryPointer-beginningPointer)*2+1)+beginningPointer), n-1, addressPointer);
+		bprintRec((((memoryPointer-beginningPointer)*2+2)+beginningPointer), n-1, addressPointer+power(n-1));
 	}else{
-		printf("\n-State: %c, Size: 2^%d-", memoryPointer[0], n);
+		printf("\n-State: %c, Size: 2^%d, Address %lx-", memoryPointer[0], n, addressPointer);
 	}
 }
 
@@ -215,7 +215,7 @@ void bprint(void)//Prints leaves of the tree
 {
 	//Print the tree in order. User pre-order traverse algorithm. Calculate addresses and print only states of leaves.
 	printf("\n----Current Memory----\nFrom Left To Right Order\n**a stands for allocated, f stands for free**\n");
-	bprintRec(beginningPointer, externalMaxPowerNum);
+	bprintRec(beginningPointer, externalMaxPowerNum, beginningPointer);
 }
 
 void bfree(void *objectptr)
