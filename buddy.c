@@ -25,7 +25,8 @@ int power(int x)
 {
 	int i = 0;
 	int result = 1;
-	while(i<x){
+	while(i<x)
+	{
 		result = result*2;
 		i++;
 	}
@@ -228,6 +229,7 @@ void bfree(void *objectptr)
 
 void findRemoveIndice (unsigned long place,unsigned long chunkStart, unsigned long chunkEnd ,char* memoryPointer, int index)
 {
+	//This is a recursive binary search algorithm.
 	if(memoryPointer[0]=='p')
 	{
 		unsigned long middle = ((chunkEnd-chunkStart)/2)+chunkStart;
