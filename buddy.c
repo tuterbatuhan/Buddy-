@@ -72,7 +72,6 @@ int binit(void *chunkpointer, int size)
 	
 	if(x<256)
 		x=256;
-	printf("\nTree size %d", x);
 	balloc(x);//As the size of a char is only 1 byte, this portion won't be able to allocated anymore or freed until the process finishes.	
 	
 	//Ending of allocating the size for tree in order to be used entire process.
@@ -98,7 +97,7 @@ void* balloc(int objectsize)
 	
 	if(power(internalMaxPowerNum)>=chunkSize)
 	{
-		printf("Error 1");
+		printf("Error: requested size is too large!");
 		return 0;
 	}
 	else
@@ -220,7 +219,6 @@ void bprint(void)//Prints leaves of the tree
 
 void bfree(void *objectptr)
 {
-	printf("\nbfree called");
 	//Calculates the position
 	//If position is at beginningPointer do not free. Tree is there.
 	//Else free.
