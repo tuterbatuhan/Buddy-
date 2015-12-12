@@ -89,8 +89,6 @@ int binit(void *chunkpointer, int size)
 void* balloc(int objectsize)
 {
 	
-	if(objectsize<256||objectsize>65536)
-		return 0;
 	//Start from the left. Find or create a suitable place. If node is a parent check childs.
 	//Calculate the memory location
 	//If found place starts after (beginningPointer+chunkSize) return null
