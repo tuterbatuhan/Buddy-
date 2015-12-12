@@ -220,6 +220,7 @@ void bprint(void)//Prints leaves of the tree
 	//Print the tree in order. User pre-order traverse algorithm. Calculate addresses and print only states of leaves.
 	printf("\n----Current Memory----\nFrom Left To Right Order\n**a stands for allocated, f stands for free**\n");
 	bprintRec(beginningPointer, externalMaxPowerNum, beginningPointer);
+	printf("\n");
 }
 
 void bfree(void *objectptr)
