@@ -21,8 +21,8 @@ char* recursiveBallocSearcherFinder(int size, int desiredSize, char *memoryPoint
 void freeIndice(char * freeptr,int index);
 void findRemoveIndice (unsigned long place,unsigned long chunkStart, unsigned long chunkEnd ,char* memoryPointer, int index);
 
-
-int power(int x){
+int power(int x)
+{
 	int i = 0;
 	int result = 1;
 	while(i<x){
@@ -284,10 +284,4 @@ void freeIndice(char * freeptr,int index)
 		printf("\nError in freeIndice");	
 		return;
 	}
-}
-void printAvailabilityArray ()
-{
-	int i;
-	for (i =0; i<17;i++)
-		printf("\ni %d:  %d",i,availabilityArray[i]);
 }
