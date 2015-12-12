@@ -25,8 +25,7 @@ int power(int x)
 {
 	int i = 0;
 	int result = 1;
-	while(i<x)
-	{
+	while(i<x){
 		result = result*2;
 		i++;
 	}
@@ -118,92 +117,98 @@ void* balloc(int objectsize)
 	return (NULL);		// if not success
 }
 
-char* recursiveBallocSearcherForced(int size, int desiredSize, char *memoryPointer, char *returnMemoryPointer){
+char* recursiveBallocSearcherForced(int size, int desiredSize, char *memoryPointer, char *returnMemoryPointer){//Finds a suitable place for allocation by dividing
 	
-	if(memoryPointer[0] == 'a')
+	if(memoryPointer[0] == 'a')//If the node is allocated return 0
 		return 0;
-	else if(memoryPointer[0] == 'p')
+	else if(memoryPointer[0] == 'p')//If the node is a parent node
 	{
-		if(desiredSize == size)
+		if(desiredSize == size)//If it is not available and has a size of requested size return
 			return 0;
 		
-		else if(desiredSize < size)
+		else if(desiredSize < size)//If desired size is less than current size
 		{
 			int blabla = power(size-1);
-			char *leftChild = recursiveBallocSearcherForced(size-1, desiredSize, ((memoryPointer-beginningPointer)*2+1)+beginningPointer, returnMemoryPointer);
+			char *leftChild = recursiveBallocSearcherForced(size-1, desiredSize, ((memoryPointer-beginningPointer)*2+1)+beginningPointer, returnMemoryPointer);//Continue to the left child
 			if(leftChild != 0)//Go to left child
 				return leftChild;
 			
-			char *rightChild = recursiveBallocSearcherForced(size-1, desiredSize, ((memoryPointer-beginningPointer)*2+2)+beginningPointer, returnMemoryPointer+blabla);
+			char *rightChild = recursiveBallocSearcherForced(size-1, desiredSize, ((memoryPointer-beginningPointer)*2+2)+beginningPointer, returnMemoryPointer+blabla);//Continue to the right child
 			if(rightChild != 0)
 				return rightChild;
 			
 		}
 	}
-	else if(memoryPointer[0] == 'f')
+	else if(memoryPointer[0] == 'f')//If it is a free node
 	{
-		if(desiredSize < size)
+		if(desiredSize < size)//If desired size is less than current size
 		{
-			memoryPointer[0] = 'p';
-			availabilityArray[size-9]++;
+			memoryPointer[0] = 'p';//Divide the node
+			availabilityArray[size-9]++;//Rearrange availability array
 			availabilityArray[size-9]++;
 			availabilityArray[size-8]--;
-			if(desiredSize==size-1)
+			if(desiredSize==size-1)//If the left child's size is desired size
 			{
-				(((memoryPointer-beginningPointer)*2+1)+beginningPointer)[0] = 'a';
-				availabilityArray[size-9]--;
-				return returnMemoryPointer;
+				(((memoryPointer-beginningPointer)*2+1)+beginningPointer)[0] = 'a';//Allocate left child
+				availabilityArray[size-9]--;//Rearrange availability array
+				return returnMemoryPointer;//Return allocated address
 			}
 			else
 			{
-				return recursiveBallocSearcherForced(size-1, desiredSize, ((memoryPointer-beginningPointer)*2+1)+beginningPointer, returnMemoryPointer);
+				return recursiveBallocSearcherForced(size-1, desiredSize, ((memoryPointer-beginningPointer)*2+1)+beginningPointer, returnMemoryPointer);//Search to deeper
 			}
 		}
 	}
 	return 0;
 }
 
-char* recursiveBallocSearcherFinder(int size, int desiredSize, char *memoryPointer, char *returnMemoryPointer){
-	//printf("\n\nsize: %d, desiredSize: %d\n, letter: %c\n", size, desiredSize, memoryPointer[0]);
-	if(memoryPointer[0] == 'a')
+char* recursiveBallocSearcherFinder(int size, int desiredSize, char *memoryPointer, char *returnMemoryPointer)
+{//Finds a sutiable place for desired size
+
+	if(memoryPointer[0] == 'a')//If node is an allocated node return
 		return 0;
 	
-	else if(memoryPointer[0] == 'p')
+	else if(memoryPointer[0] == 'p')//If node is a parent node
 	{
-		if(desiredSize == size)
+		if(desiredSize == size)//If desired size is the current size return
 			return 0;
-		else if(desiredSize < size)
+		else if(desiredSize < size)//If the desired size is less than current size
 		{
 			int blabla = power(size-1);
-			char *leftChild = recursiveBallocSearcherFinder(size-1, desiredSize, ((memoryPointer-beginningPointer)*2+1)+beginningPointer, returnMemoryPointer);
+			char *leftChild = recursiveBallocSearcherFinder(size-1, desiredSize, ((memoryPointer-beginningPointer)*2+1)+beginningPointer, returnMemoryPointer);//Search through left child
 			if(leftChild != 0)//Go to left child
 				return leftChild;
 			
-			char *rightChild = recursiveBallocSearcherFinder(size-1, desiredSize, ((memoryPointer-beginningPointer)*2+2)+beginningPointer, returnMemoryPointer+blabla);
+			char *rightChild = recursiveBallocSearcherFinder(size-1, desiredSize, ((memoryPointer-beginningPointer)*2+2)+beginningPointer, returnMemoryPointer+blabla);//Search through right child
 			if(rightChild != 0)
 				return rightChild;
 		}
 	}
-	else if(memoryPointer[0] == 'f')
+	else if(memoryPointer[0] == 'f')//If the node is a free node
 	{
-		if(desiredSize == size)
+		if(desiredSize == size)//If the current size is desired size
 		{
-			memoryPointer[0] = 'a';
-			availabilityArray[size-8]--;
-			return returnMemoryPointer;
+			memoryPointer[0] = 'a';//Set node allocated
+			availabilityArray[size-8]--;//Rearrange availability array
+			return returnMemoryPointer;//Return allocation address
 		}
 	}
 	return 0;
 }
 
-void bprint(void)
+void bprint(void)//Prints leaves of the tree
 {
 	//Print the tree in order. User pre-order traverse algorithm. Calculate addresses and print only states of leaves.
-	int i;
-	for(i = 0;i<(power(externalMaxPowerNum-7)); i++)
-		printf("\n%d:  %c",i, beginningPointer[i]);
-	
-	return;
+	printf("a stands for allocated, f stands for free");
+	bprintRec(beginningPointer, externalMaxPowerNum);
+}
+
+void bprintRec(char * memoryPointer, int n){
+	if(memoryPointer[0]!='a'||memoryPointer[0]!='f'){
+		bprintRec((((memoryPointer-beginningPointer)*2+1)+beginningPointer), n-1);
+	}else{
+		printf("----State: %c, Size: 2^%d----", memoryPointer[0], n);
+	}
 }
 
 void bfree(void *objectptr)
@@ -229,7 +234,6 @@ void bfree(void *objectptr)
 
 void findRemoveIndice (unsigned long place,unsigned long chunkStart, unsigned long chunkEnd ,char* memoryPointer, int index)
 {
-	//This is a recursive binary search algorithm.
 	if(memoryPointer[0]=='p')
 	{
 		unsigned long middle = ((chunkEnd-chunkStart)/2)+chunkStart;
