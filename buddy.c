@@ -48,7 +48,6 @@ int binit(void *chunkpointer, int size)
 	for(i = 0; i<16; i++)
 		availabilityArray[i] = 0;
 
-	
 	availabilityArray[internalMaxPowerNum-8] = 1;//Sets the 2^n to 1 as there is one free node at size 2^n where 2^n>chunkSize and 2^(n-1)<chunkSize
 	
 	//for(i=0; i<17; i++)
@@ -80,7 +79,6 @@ int binit(void *chunkpointer, int size)
 	
 	//Ending of allocating the size for tree in order to be used entire process.
 	
-
 	return (0);		// if success
 }
 
@@ -198,7 +196,6 @@ char* recursiveBallocSearcherFinder(int size, int desiredSize, char *memoryPoint
 			return returnMemoryPointer;
 		}
 	}
-	
 	return 0;
 }
 
@@ -209,7 +206,6 @@ void bprint(void)
 	for(i = 0;i<(power(externalMaxPowerNum-7)); i++){
 		printf("\n%d:  %c",i, beginningPointer[i]);
 	}
-	
 	
 	printf("bprint called\n");
 	return;
@@ -232,12 +228,8 @@ void bfree(void *objectptr)
 		char * freeptr = findRemoveIndice(place, 0,power(externalMaxPowerNum),(char *) beginningPointer);
 		//printf ("\n%c\n",freeptr[0]);
 		freeIndice(freeptr);
-		
-		
-
 		return;
 	}
-	
 	else
 	{
 		printf("\nbfree bounds are not valid!");
@@ -247,7 +239,6 @@ void bfree(void *objectptr)
 
 char* findRemoveIndice (unsigned long place,unsigned long chunkStart, unsigned long chunkEnd ,char* memoryPointer)
 {
-	
 	if(memoryPointer[0]=='p')
 	{
 		printf("\nletter is: %c", memoryPointer[0]);
