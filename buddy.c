@@ -70,6 +70,7 @@ int binit(void *chunkpointer, int size)
 	
 	if(x<256)
 		x=256;
+	printf("\nTree size %d", x);
 	balloc(x);//As the size of a char is only 1 byte, this portion won't be able to allocated anymore or freed until the process finishes.	
 	
 	//Ending of allocating the size for tree in order to be used entire process.
@@ -196,19 +197,20 @@ char* recursiveBallocSearcherFinder(int size, int desiredSize, char *memoryPoint
 	return 0;
 }
 
+void bprintRec(char * memoryPointer, int n){
+	if(memoryPointer[0]!='a'&&memoryPointer[0]!='f'&& n>=8){
+		bprintRec((((memoryPointer-beginningPointer)*2+1)+beginningPointer), n-1);
+		bprintRec((((memoryPointer-beginningPointer)*2+2)+beginningPointer), n-1);
+	}else{
+		printf("\n-State: %c, Size: 2^%d-", memoryPointer[0], n);
+	}
+}
+
 void bprint(void)//Prints leaves of the tree
 {
 	//Print the tree in order. User pre-order traverse algorithm. Calculate addresses and print only states of leaves.
-	printf("a stands for allocated, f stands for free");
+	printf("\n----Current Memory----\nFrom Left To Right Order\n**a stands for allocated, f stands for free**\n");
 	bprintRec(beginningPointer, externalMaxPowerNum);
-}
-
-void bprintRec(char * memoryPointer, int n){
-	if(memoryPointer[0]!='a'||memoryPointer[0]!='f'){
-		bprintRec((((memoryPointer-beginningPointer)*2+1)+beginningPointer), n-1);
-	}else{
-		printf("----State: %c, Size: 2^%d----", memoryPointer[0], n);
-	}
 }
 
 void bfree(void *objectptr)
