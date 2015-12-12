@@ -18,8 +18,8 @@ int availabilityArray[17];
 void* balloc(int objectsize);
 char* recursiveBallocSearcherForced(int size, int desiredSize, char *memoryPointer, char *returnMemoryPointer);
 char* recursiveBallocSearcherFinder(int size, int desiredSize, char *memoryPointer, char *returnMemoryPointer);
-void freeIndice(char * freeptr );
-char* findRemoveIndice (unsigned long place,unsigned long chunkStart, unsigned long chunkEnd ,char* memoryPointer);
+void freeIndice(char * freeptr,int index);
+void findRemoveIndice (unsigned long place,unsigned long chunkStart, unsigned long chunkEnd ,char* memoryPointer, int index);
 
 
 int power(int x){
@@ -50,9 +50,6 @@ int binit(void *chunkpointer, int size)
 
 	availabilityArray[internalMaxPowerNum-8] = 1;//Sets the 2^n to 1 as there is one free node at size 2^n where 2^n>chunkSize and 2^(n-1)<chunkSize
 	
-	//for(i=0; i<17; i++)
-	//	printf("\ni: %d, value: %d", i, availabilityArray[i]);
-	
 	beginningPointer = (char *)chunkpointer;//Set the begining
 	
 	//Begining of the tree creation
@@ -60,10 +57,9 @@ int binit(void *chunkpointer, int size)
 	
 	int n = internalMaxPowerNum-7;//As in the worst case user allocated 256 bytes per request(2^8 = 256, 2^internalMaxPowerNum/2^8=chunkSize/256)
 		
-	for(i = 0;i<(power(n)-1); i++){
+	for(i = 0;i<(power(n)-1); i++)
 		charptr[i] = 'f';
-		//printf("%d:  %c\n",i, charptr[i]);
-	}
+	
 	//End of tree creation	
 
 	//Begining of allocating the size for tree in order to be used entire process.
@@ -74,7 +70,6 @@ int binit(void *chunkpointer, int size)
 	
 	if(x<256)
 		x=256;
-	printf("\nsize of tree is: %d bytes", x);
 	balloc(x);//As the size of a char is only 1 byte, this portion won't be able to allocated anymore or freed until the process finishes.	
 	
 	//Ending of allocating the size for tree in order to be used entire process.
@@ -84,7 +79,6 @@ int binit(void *chunkpointer, int size)
 
 void* balloc(int objectsize)
 {
-	printf("\nballoc called for: %d", objectsize);
 	//Start from the left. Find or create a suitable place. If node is a parent check childs.
 	//Calculate the memory location
 	//If found place starts after (beginningPointer+chunkSize) return null
@@ -96,73 +90,71 @@ void* balloc(int objectsize)
 	while(power(internalMaxPowerNum)<objectsize)
 		internalMaxPowerNum++;//Calculate the n where 2^(n-1) is smaller than objectsize and 2^n is larger than objectsize
 	
-	if(power(internalMaxPowerNum)>=chunkSize){
+	if(power(internalMaxPowerNum)>=chunkSize)
+	{
 		printf("Error 1");
 		return 0;
 	}
-	else{
-		//int currentCheckSize = power(externalMaxPowerNum);//Set the initial size of the node that is the head node
-		if(availabilityArray[internalMaxPowerNum-8]>0){
-			//printf("\ncalled finder");
+	else
+	{	
+		if(availabilityArray[internalMaxPowerNum-8]>0)
+		{
 			char * result = recursiveBallocSearcherFinder(externalMaxPowerNum, internalMaxPowerNum, beginningPointer, beginningPointer);
-			if(result<beginningPointer+chunkSize&&result+objectsize<=beginningPointer+chunkSize){
-				int i;
-				for(i=0; i<17; i++)
-					printf("\ni: %d, value: %d", i, availabilityArray[i]);
+			if(result<beginningPointer+chunkSize&&result+objectsize<=beginningPointer+chunkSize)
 				return result;
-			}
 			else
 				return NULL;
-			//return (void *)recursiveBallocSearcherFinder(externalMaxPowerNum, internalMaxPowerNum, beginningPointer, beginningPointer);
-		}else{
-			//printf("\ncalled forced");
+		}
+		else
+		{
 			char * result = recursiveBallocSearcherForced(externalMaxPowerNum, internalMaxPowerNum, beginningPointer, beginningPointer);
-			if(result<beginningPointer+chunkSize&&result+objectsize<=beginningPointer+chunkSize){
-				int i;
-				for(i=0; i<17; i++)
-					printf("\ni: %d, value: %d", i, availabilityArray[i]);
+			if(result<beginningPointer+chunkSize&&result+objectsize<=beginningPointer+chunkSize)
 				return result;
-			}
 			else
 				return NULL;
-			//return (void *)recursiveBallocSearcherForced(externalMaxPowerNum, internalMaxPowerNum, beginningPointer, beginningPointer);
 		}
 	}
-	
 	return (NULL);		// if not success
 }
 
 char* recursiveBallocSearcherForced(int size, int desiredSize, char *memoryPointer, char *returnMemoryPointer){
 	
-	if(memoryPointer[0] == 'a'){
+	if(memoryPointer[0] == 'a')
 		return 0;
-	}
-	else if(memoryPointer[0] == 'p'){
-		if(desiredSize == size){
+	else if(memoryPointer[0] == 'p')
+	{
+		if(desiredSize == size)
 			return 0;
-		}else if(desiredSize < size){
+		
+		else if(desiredSize < size)
+		{
 			int blabla = power(size-1);
 			char *leftChild = recursiveBallocSearcherForced(size-1, desiredSize, ((memoryPointer-beginningPointer)*2+1)+beginningPointer, returnMemoryPointer);
-			if(leftChild != 0){//Go to left child
+			if(leftChild != 0)//Go to left child
 				return leftChild;
-			}
+			
 			char *rightChild = recursiveBallocSearcherForced(size-1, desiredSize, ((memoryPointer-beginningPointer)*2+2)+beginningPointer, returnMemoryPointer+blabla);
-			if(rightChild != 0){
+			if(rightChild != 0)
 				return rightChild;
-			}
+			
 		}
-	}else if(memoryPointer[0] == 'f'){
-		if(desiredSize < size){
+	}
+	else if(memoryPointer[0] == 'f')
+	{
+		if(desiredSize < size)
+		{
 			memoryPointer[0] = 'p';
 			availabilityArray[size-9]++;
 			availabilityArray[size-9]++;
 			availabilityArray[size-8]--;
-			if(desiredSize==size-1){
+			if(desiredSize==size-1)
+			{
 				(((memoryPointer-beginningPointer)*2+1)+beginningPointer)[0] = 'a';
 				availabilityArray[size-9]--;
 				return returnMemoryPointer;
 			}
-			else{
+			else
+			{
 				return recursiveBallocSearcherForced(size-1, desiredSize, ((memoryPointer-beginningPointer)*2+1)+beginningPointer, returnMemoryPointer);
 			}
 		}
@@ -172,25 +164,29 @@ char* recursiveBallocSearcherForced(int size, int desiredSize, char *memoryPoint
 
 char* recursiveBallocSearcherFinder(int size, int desiredSize, char *memoryPointer, char *returnMemoryPointer){
 	//printf("\n\nsize: %d, desiredSize: %d\n, letter: %c\n", size, desiredSize, memoryPointer[0]);
-	if(memoryPointer[0] == 'a'){
+	if(memoryPointer[0] == 'a')
 		return 0;
-	}
-	else if(memoryPointer[0] == 'p'){
-		if(desiredSize == size){
+	
+	else if(memoryPointer[0] == 'p')
+	{
+		if(desiredSize == size)
 			return 0;
-		}else if(desiredSize < size){
+		else if(desiredSize < size)
+		{
 			int blabla = power(size-1);
 			char *leftChild = recursiveBallocSearcherFinder(size-1, desiredSize, ((memoryPointer-beginningPointer)*2+1)+beginningPointer, returnMemoryPointer);
-			if(leftChild != 0){//Go to left child
+			if(leftChild != 0)//Go to left child
 				return leftChild;
-			}
+			
 			char *rightChild = recursiveBallocSearcherFinder(size-1, desiredSize, ((memoryPointer-beginningPointer)*2+2)+beginningPointer, returnMemoryPointer+blabla);
-			if(rightChild != 0){
+			if(rightChild != 0)
 				return rightChild;
-			}
 		}
-	}else if(memoryPointer[0] == 'f'){
-		if(desiredSize == size){
+	}
+	else if(memoryPointer[0] == 'f')
+	{
+		if(desiredSize == size)
+		{
 			memoryPointer[0] = 'a';
 			availabilityArray[size-8]--;
 			return returnMemoryPointer;
@@ -201,13 +197,11 @@ char* recursiveBallocSearcherFinder(int size, int desiredSize, char *memoryPoint
 
 void bprint(void)
 {
-	int i;
 	//Print the tree in order. User pre-order traverse algorithm. Calculate addresses and print only states of leaves.
-	for(i = 0;i<(power(externalMaxPowerNum-7)); i++){
+	int i;
+	for(i = 0;i<(power(externalMaxPowerNum-7)); i++)
 		printf("\n%d:  %c",i, beginningPointer[i]);
-	}
 	
-	printf("bprint called\n");
 	return;
 }
 
@@ -222,12 +216,7 @@ void bfree(void *objectptr)
 	if((char *)objectptr > (char *)beginningPointer && ((char *)objectptr <= (char * )beginningPointer+chunkSize))
 	{
 		unsigned long place = (unsigned long)((char *)objectptr - (char *)beginningPointer);
-		printf("\nPlace: %lu",place);
-		
-		//char * freeptr = findRemoveIndice(place, 0,chunkSize,(char *) beginningPointer);
-		char * freeptr = findRemoveIndice(place, 0,power(externalMaxPowerNum),(char *) beginningPointer);
-		//printf ("\n%c\n",freeptr[0]);
-		freeIndice(freeptr);
+		findRemoveIndice(place, 0,power(externalMaxPowerNum),(char *) beginningPointer,externalMaxPowerNum);
 		return;
 	}
 	else
@@ -237,36 +226,31 @@ void bfree(void *objectptr)
 	}	
 }
 
-char* findRemoveIndice (unsigned long place,unsigned long chunkStart, unsigned long chunkEnd ,char* memoryPointer)
+void findRemoveIndice (unsigned long place,unsigned long chunkStart, unsigned long chunkEnd ,char* memoryPointer, int index)
 {
 	if(memoryPointer[0]=='p')
 	{
-		printf("\nletter is: %c", memoryPointer[0]);
 		unsigned long middle = ((chunkEnd-chunkStart)/2)+chunkStart;
-		
-		printf("\nMiddle: %lu",middle);
 		if(place<middle)
 		{
-			printf("\nHi Left!");
 			char * leftChild = ((memoryPointer-(char *)beginningPointer)*2+1+(char *)beginningPointer); 
-			return findRemoveIndice (place,chunkStart,middle, leftChild);
+			findRemoveIndice (place,chunkStart,middle, leftChild,index-1);
 		}
 		if(place>=middle)
 		{
-			printf("\nHi Right!");
 			char * rightChild = ((memoryPointer-(char *) beginningPointer)*2+2+(char *)beginningPointer); 
-			return findRemoveIndice (place,middle, chunkEnd, rightChild);
-		}
-		
+			findRemoveIndice (place,middle, chunkEnd, rightChild,index-1);
+		}	
 	}
-	printf("\nletter is: %c", memoryPointer[0]);
-	return memoryPointer;
+	else
+		freeIndice(memoryPointer,index);
 }
-void freeIndice(char * freeptr )
+void freeIndice(char * freeptr,int index)
 {
 	if(freeptr[0]=='a')
 	{
 		freeptr[0]='f';
+		availabilityArray[index-8]++;//Increase the availability number
 		if (freeptr == beginningPointer)//We have the situation that all memory is freed
 			return;
 		char * parent = (((freeptr-(char *)beginningPointer)-1)/2 + (char *)beginningPointer);
@@ -275,9 +259,13 @@ void freeIndice(char * freeptr )
 		if(leftChild[0]=='f' && rightChild[0]=='f')//If sibling is free
 		{
 			parent[0] = 'f';
-			freeIndice(parent);
+			availabilityArray[index-7]++;//Increase the availability of parent
+			availabilityArray[index-8]=availabilityArray[index-8]-2;//Decrease the availability of both childs
+			freeIndice(parent,++index);
 		}
-	}else if(freeptr[0]=='f'){
+	}
+	else if(freeptr[0]=='f')
+	{
 		if (freeptr == beginningPointer)//We have the situation that all memory is freed
 			return;
 		char * parent = (((freeptr-(char *)beginningPointer)-1)/2 + (char *)beginningPointer);
@@ -286,7 +274,9 @@ void freeIndice(char * freeptr )
 		if(leftChild[0]=='f' && rightChild[0]=='f')//If sibling is free
 		{
 			parent[0] = 'f';
-			freeIndice(parent);
+			availabilityArray[index-7]++;//Increase the availability of parent
+			availabilityArray[index-8]=availabilityArray[index-8]-2;//Decrease the availability of both childs
+			freeIndice(parent,++index);
 		}
 	}
 	else
@@ -294,4 +284,10 @@ void freeIndice(char * freeptr )
 		printf("\nError in freeIndice");	
 		return;
 	}
+}
+void printAvailabilityArray ()
+{
+	int i;
+	for (i =0; i<17;i++)
+		printf("\ni %d:  %d",i,availabilityArray[i]);
 }
