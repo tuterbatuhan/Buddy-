@@ -208,7 +208,7 @@ char* recursiveBallocSearcherFinder(int size, int desiredSize, char *memoryPoint
 	return 0;
 }
 
-void bprintRec(char * memoryPointer, int n, char *addressPointer){
+void bprintRec(char * memoryPointer, int n, char *addressPointer){//Recursive helper function for 
 	if(memoryPointer[0]!='a'&&memoryPointer[0]!='f'&& n>=8){
 		bprintRec((((memoryPointer-beginningPointer)*2+1)+beginningPointer), n-1, addressPointer);
 		bprintRec((((memoryPointer-beginningPointer)*2+2)+beginningPointer), n-1, addressPointer+power(n-1));
